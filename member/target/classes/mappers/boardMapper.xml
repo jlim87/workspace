@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 다른 mapper와 중복되지 않도록 네임스페이스 기재 -->
+<mapper namespace="board">
+
+	<select id="boardList" resultType="com.board.example.dto.BoardDTO">
+			SELECT BOARDID, TITLE, REGDATE, MODDATE
+			FROM BOARD
+			ORDER BY BOARDID DESC
+	</select>
+	
+	<insert id="write" >
+		INSERT INTO BOARD (TITLE, CONTENT, REGDATE, USERID)
+		VALUES (#{title}, #{content}, now(), #{userId})
+	</insert>
+	
+	<select id="view" resultType="com.board.example.dto.BoardDTO">
+		SELECT * 
+		FROM BOARD
+		WHERE BOARDID = #{boardId}
+	</select>
+		
+	<update id="update">
+		UPDATE BOARD SET TITLE = #{title}, CONTENT = #{content}, MODDATE = now()
+		WHERE BOARDID = #{boardId}
+	</update>
+
+	<delete id="delete">
+		DELETE 
+		FROM BOARD
+		WHERE BOARDID = #{boardId}
+	</delete>
+	
+</mapper>
+
+
