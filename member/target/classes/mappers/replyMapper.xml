@@ -8,15 +8,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<!-- 댓글 입력 -->
 	<insert id="insertReply">
-		INSERT INTO REPLY (REPLYNO, BOARDID, REPLYCONTENT, REPLYER)
-		VALUES (#{replyNo}, #{boardId}, #{replyContent}, #{replyer})
+		INSERT INTO REPLY (BOARDID, REPLYCONTENT, REPLYER)
+		VALUES (#{boardId}, #{replyContent}, #{replyer})
 	</insert>
 	
 	<!-- 댓글 목록 -->	
 	<select id="listReply" resultType="com.board.example.dto.ReplyDTO">
-		SELECT REPLYNO, BOARDID, REPLYER, USERID
-		FROM REPLY R, MEMBER M
-		WHERE R.REPLYER = M.userId AND BOARDID = #{boardId}
+		SELECT REPLYNO, BOARDID, REPLYER, REPLYCONTENT
+		FROM REPLY
+		WHERE BOARDID = #{boardId}
 		ORDER BY REPLYNO
 	</select>
 	

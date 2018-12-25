@@ -72,11 +72,11 @@
 			url:"${path}/reply/listJson.do?boardId=${dto.boardId}",
 			success:function(result){
 				console.log(result);
-				var output = "<table>";
+				var output = "<table border='1' align='center' width='800'>";
 				for(var i in result){
 					output += "<tr>댓글</tr>";
 					output += "<tr>";
-					output += "<td>작성자: " + result[i].userId + "</td>";
+					output += "<td>작성자: " + result[i].replyer + "</td>";
 					output += "<td>글내용: " + result[i].replyContent + "</td>";
 					output += "</tr>";
 				}

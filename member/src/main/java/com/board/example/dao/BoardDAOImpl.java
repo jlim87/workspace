@@ -1,6 +1,7 @@
 package com.board.example.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,7 @@ import com.board.example.dto.BoardDTO;
 @Repository
 public class BoardDAOImpl {
 	@Autowired
-	SqlSession sqlSession;
+	SqlSession sqlSession;	
 	// 게시판 목록 불러오기
 	public List<BoardDTO> boardList() throws Exception {
 		return sqlSession.selectList("board.boardList"); 
@@ -30,6 +31,11 @@ public class BoardDAOImpl {
 	public void delete(int boardId) throws Exception {
 		sqlSession.delete("board.delete", boardId);		
 	}
+	
+	public void insertFile(Map<String, Object> map) throws Exception{
+		sqlSession.insert("board.insertFile", map);
+	}
+	
 	
 	
 }
