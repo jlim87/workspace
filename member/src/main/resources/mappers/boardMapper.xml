@@ -37,8 +37,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 
 	<insert id="write">
-		INSERT INTO BOARD (TITLE, CONTENT, REGDATE,
-		USERID)
+		INSERT INTO BOARD (TITLE, CONTENT, REGDATE, USERID)
 		VALUES (#{title}, #{content}, now(), #{userId})
 	</insert>
 

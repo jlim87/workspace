@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import com.board.example.dao.BoardDAOImpl;
+import com.board.example.dao.BoardDAO;
 import com.board.example.dto.BoardDTO;
 import com.board.util.FileUtils;
 
@@ -22,7 +22,7 @@ public class BoardServiceImpl{
 	Logger log = Logger.getLogger(this.getClass());
 	
 	@Autowired
-	BoardDAOImpl boardDao;
+	BoardDAO boardDao;
 	
 	@Resource(name="fileUtils")
 	private FileUtils fileUtils;
@@ -45,8 +45,22 @@ public class BoardServiceImpl{
 		return boardDao.boardList(); 
 	}
 
-	public void write(BoardDTO dto) throws Exception {
-		boardDao.write(dto);		
+	public void write(BoardDTO dto, HttpServletRequest request) throws Exception {
+		boardDao.write(dto, request);		
+		
+		MultipartHttpServletRequest multipartHttpServletRequest = (MultipartHttpServletRequest)request;
+		Iterator<String> iterator = multipartHttpServletRequest.getFileNames();
+		MultipartFile multipartFile = null;
+		while(iterator.hasNext()) {
+			multipartFile = multipartHttpServletRequest.getFile(iterator.next());
+			if(multipartFile.isEmpty() == false) {
+				log.debug("-------------- file start --------------");
+				log.debug("name : " + multipartFile.getName());
+				log.debug("filename : " + multipartFile.getOriginalFilename());
+				log.debug("size : " + multipartFile.getSize());
+				log.debug("-------------- file end ----------------");
+			}
+		}
 	}
 
 	public BoardDTO view(int boardId) throws Exception {
@@ -60,6 +74,5 @@ public class BoardServiceImpl{
 	public void delete(int boardId) throws Exception {
 		boardDao.delete(boardId);		
 	}
-	
-	
+
 }

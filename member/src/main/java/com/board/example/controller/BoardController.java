@@ -36,85 +36,83 @@ import com.board.example.service.BoardServiceImpl;
 
 @Controller
 @RequestMapping("/board/*") 
-public class BoardController implements ServletContextAware {
+public class BoardController{
 	
-	private ServletContext context;
 	
 	@Autowired
 	BoardServiceImpl boardServiceImpl;
 	
 	@RequestMapping("list.do")
 	public String boardList(Model model) throws Exception  {
-		List<BoardDTO> list = boardServiceImpl.boardList(); // list º¯¼ö¿¡ °á°ú °ªÀ» ´ã´Â´Ù.
-		model.addAttribute("list", list); // model¿¡ µ¥ÀÌÅÍ °ªÀ» ´ã´Â´Ù.
-		return "board/list"; // board/board_list.jsp·Î ÀÌµ¿.
+		List<BoardDTO> list = boardServiceImpl.boardList();
+		model.addAttribute("list", list); 
+		return "board/list";
 	}
 	
-	 // write.jsp ¸ÅÇÎ
 	@RequestMapping("write")
 	public String writePage() {
 		return "board/write";
 	}
 	
-	// °Ô½Ã±Û form µ¥ÀÌÅÍ Ã³¸®
 	@RequestMapping(value="write.do", method=RequestMethod.POST)
-	public String write(BoardDTO dto, HttpServletRequest request, HttpServletResponse response) throws Exception{
+	public String write(BoardDTO dto, HttpServletRequest request, HttpServletResponse response, HttpSession session) throws Exception{
 	
-		boardServiceImpl.write(dto);
+		String userId = (String)session.getAttribute("userId");
+		
+		dto.setUserId(userId);
+		boardServiceImpl.write(dto, request);
 		return "redirect:list.do";
 	}
 	
-	// °Ô½Ã±Û »ó¼¼³»¿ë
+	/*@RequestMapping(value="insert.do", method=RequestMethod.POST)
+	public String insert(@ModelAttribute BoardDTO dto, HttpSession session, HttpServletRequest request) throws Exception{
+
+		String userId = (String)session.getAttribute("userId");
+
+		dto.setUserId(userId);
+		boardServiceImpl.write(dto, request);
+		return "redirect:list.do";
+	}*/
+	
 	@RequestMapping(value="view.do", method=RequestMethod.GET)
 	public String view(@RequestParam int boardId, Model model) throws Exception{
-		BoardDTO dto = boardServiceImpl.view(boardId);		// boardId °ªÀ» ³Ñ±ä´Ù.
-		model.addAttribute("dto", dto);	// model¿¡ µ¥ÀÌÅÍ °ªÀ» ´ã´Â´Ù.
-		return "board/view";		// board/list.jsp·Î ÀÌµ¿.
+		BoardDTO dto = boardServiceImpl.view(boardId);
+		model.addAttribute("dto", dto);	
+		return "board/view";		
 	}
 	
-	// °Ô½Ã±Û ¼öÁ¤ ÆäÀÌÁö·Î ÀÌµ¿
 	@RequestMapping(value="update", method=RequestMethod.GET)
 	public String update(@RequestParam int boardId, Model model) throws Exception{
-		BoardDTO dto = boardServiceImpl.view(boardId);	// boardId°ªÀ» ³Ñ±è.
-		model.addAttribute("dto", dto);	// model¿¡ µ¥ÀÌÅÍ °ªÀ» ´ã´Â´Ù.
-		return "board/update";	// board/update.jsp·Î ÀÌµ¿
+		BoardDTO dto = boardServiceImpl.view(boardId);	
+		model.addAttribute("dto", dto);	
+		return "board/update";	
 	}
 	
-	// °Ô½Ã±Û ¼öÁ¤
 	@RequestMapping(value="update.do", method=RequestMethod.POST)
 	public String updateSave(BoardDTO dto) throws Exception{
 		boardServiceImpl.update(dto);
 		return "redirect:list.do";
 	}
 	
-	// °Ô½Ã±Û »èÁ¦
 	@RequestMapping(value="delete.do", method= {RequestMethod.GET, RequestMethod.POST})
 	public String delete(@RequestParam int boardId) throws Exception{
 		boardServiceImpl.delete(boardId);
 		return "redirect:list.do";
 	}	
 	
-	@RequestMapping(value="insert.do", method=RequestMethod.POST)
-	public String insert(@ModelAttribute BoardDTO dto, HttpSession session) throws Exception{
-		// session¿¡ ÀúÀåµÈ userId¸¦ userId¿¡ ÀúÀå
-		String userId = (String)session.getAttribute("userId");
-		// dto¿¡ userId¸¦ ¼¼ÆÃ
-		dto.setUserId(userId);
-		boardServiceImpl.write(dto);
-		return "redirect:list.do";
-	}
-	
-	// ´ÙÁßÆÄÀÏ¾÷·Îµå
-	@RequestMapping(value = "fileUpload.do", method = RequestMethod.POST)
-	@ResponseBody
+
+	// ë‹¤ì¤‘íŒŒì¼ì—…ë¡œë“œ
+    @RequestMapping(value = "/file_uploader_html5.do",
+                  method = RequestMethod.POST)
+    @ResponseBody
     public String multiplePhotoUpload(HttpServletRequest request) {
-        // ÆÄÀÏÁ¤º¸
+        // íŒŒì¼ì •ë³´
         StringBuffer sb = new StringBuffer();
-        try { 
-            // ÆÄÀÏ¸íÀ» ¹Ş´Â´Ù - ÀÏ¹İ ¿øº»ÆÄÀÏ¸í
+        try {
+            // íŒŒì¼ëª…ì„ ë°›ëŠ”ë‹¤ - ì¼ë°˜ ì›ë³¸íŒŒì¼ëª…
             String oldName = request.getHeader("file-name");
-            // ÆÄÀÏ ±âº»°æ·Î _ »ó¼¼°æ·Î
-            String filePath = "C:\\dev\\file";
+            // íŒŒì¼ ê¸°ë³¸ê²½ë¡œ _ ìƒì„¸ê²½ë¡œ
+            String filePath = "C:\\Users\\LG\\git\\board\\member\\src\\main\\webapp\\resources\\upload\\";
             String saveName = sb.append(new SimpleDateFormat("yyyyMMddHHmmss")
                           .format(System.currentTimeMillis()))
                           .append(UUID.randomUUID().toString())
@@ -128,7 +126,7 @@ public class BoardController implements ServletContextAware {
             }
             os.flush();
             os.close();
-            // Á¤º¸ Ãâ·Â
+            // ì •ë³´ ì¶œë ¥
             sb = new StringBuffer();
             sb.append("&bNewLine=true")
               .append("&sFileName=").append(oldName)
@@ -139,10 +137,5 @@ public class BoardController implements ServletContextAware {
         }
         return sb.toString();
     }
-	
-	@Override
-	public void setServletContext(ServletContext servletContext) {
-		this.context = servletContext;
-	}
-	
 }
+

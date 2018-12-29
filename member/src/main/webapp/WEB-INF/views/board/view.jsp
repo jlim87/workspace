@@ -7,7 +7,48 @@
 <meta charset="UTF-8">
 <title>VIEW</title>
 <%@ include file="../include/header.jsp" %>
-<script>
+</head>
+<body>
+<%@ include file="../include/menu.jsp" %>	
+<form name="form" method="post">
+<div align="center">	
+	<table border="1" align="center" width="600px">
+			<tr >
+				<td>제목 </td><td width="300" height="100">${dto.title}</td>
+			</tr>
+			<tr >
+				<td>이름 </td><td width="300" height="100">${dto.userId}</td>
+			</tr>
+			<tr>
+				<td>내용 </td><td width="300" height="100">${dto.content}</td>
+			</tr>
+			<tr>
+				<td>작성일자 </td><td><fmt:formatDate value="${dto.regDate}" pattern="yyyy-MM-dd a HH:mm:ss"/></td>
+			</tr>
+			<tr>	
+				<td colspan="2" align="right">
+					<input type="hidden" name="boardId" value="${dto.boardId}">
+					<c:if test="${sessionScope.userId == dto.userId}">
+					<button type="button" id="btnUpdate">수정</button>
+					<button type="button" id="btnDelete">삭제</button>
+					</c:if>
+					<button type="button" id="btnList">목록</button>
+				</td>
+			</tr>
+		</table>
+</div>
+</form>
+<div align="center">
+<br>
+<!-- 로그인 한 회원에게만 댓글 작성폼이 보이게 처리 -->
+<c:if test="${sessionScope.userId != null }">
+<textarea rows="5" cols="80" id="replyContent" align="center"></textarea>
+<br>
+<button type="button" id="btnReply">댓글작성</button>
+</c:if>
+</div>
+<div id="listReply"></div>
+<script charset="utf-8">
 	$(document).ready(function(){
 		
 		listReply2();
@@ -74,10 +115,11 @@
 				console.log(result);
 				var output = "<table border='1' align='center' width='800'>";
 				for(var i in result){
-					output += "<tr>댓글</tr>";
+					output += "<br>";
 					output += "<tr>";
 					output += "<td>작성자: " + result[i].replyer + "</td>";
 					output += "<td>글내용: " + result[i].replyContent + "</td>";
+					output += "<td>날짜: " + result[i].regDate + "</td>";
 					output += "</tr>";
 				}
 				output += "</table>";
@@ -87,46 +129,5 @@
 	}
 	
 </script>
-</head>
-<body>
-<%@ include file="../include/menu.jsp" %>	
-<form name="form" method="post">
-<div align="center">	
-	<table border="1" align="center" width="600px">
-			<tr >
-				<td>제목 </td><td width="300" height="100">${dto.title}</td>
-			</tr>
-			<tr >
-				<td>이름 </td><td width="300" height="100">${dto.userId}</td>
-			</tr>
-			<tr>
-				<td>내용 </td><td width="300" height="100">${dto.content}</td>
-			</tr>
-			<tr>
-				<td>작성일자 </td><td><fmt:formatDate value="${dto.regDate}" pattern="yyyy-MM-dd a HH:mm:ss"/></td>
-			</tr>
-			<tr>	
-				<td colspan="2" align="right">
-					<input type="hidden" name="boardId" value="${dto.boardId}">
-					<c:if test="${sessionScope.userId == dto.userId}">
-					<button type="button" id="btnUpdate">수정</button>
-					<button type="button" id="btnDelete">삭제</button>
-					</c:if>
-					<button type="button" id="btnList">목록</button>
-				</td>
-			</tr>
-		</table>
-</div>
-</form>
-<div align="center">
-<br>
-<!-- 로그인 한 회원에게만 댓글 작성폼이 보이게 처리 -->
-<c:if test="${sessionScope.userId != null }">
-<textarea rows="5" cols="80" id="replyContent" align="center"></textarea>
-<br>
-<button type="button" id="btnReply">댓글작성</button>
-</c:if>
-</div>
-<div id="listReply"></div>
 </body>
 </html>
